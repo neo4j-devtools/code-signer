@@ -8,13 +8,13 @@ import {verify} from './verify';
 
 export * from './types';
 
-export const signApp = async (appPath: string, cert: string, key: string): Promise<void> => {
+export const signApp = async (appPath: string, certPath: string, keyPath: string): Promise<void> => {
     const digest = await digestDirectory(appPath, [SIGNATURE_FILENAME]);
 
     const options: SignOptions = {
-        certPem: fs.readFileSync(cert, 'utf8'),
+        certPem: fs.readFileSync(certPath, 'utf8'),
         data: digest,
-        privateKeyPem: fs.readFileSync(key, 'utf8')
+        privateKeyPem: fs.readFileSync(keyPath, 'utf8')
     };
 
     const signature = sign(options);
