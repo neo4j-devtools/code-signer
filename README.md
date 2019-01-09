@@ -6,13 +6,13 @@ A CLI tool for signing Graph Apps for Neo4j Desktop platform.
 Sign `my-graph-app` directory:
 ```bash
 
-app-signer --app ./my-graph-app --private-key ./private-key.pem --passphrase password --cert ./certificate.pem
+neo4j-app-signer --app ./my-graph-app --private-key ./private-key.pem --passphrase password --cert ./certificate.pem
 ```
 
 Verify `my-graph-app`:
 ```bash
 
-app-signer --verify --app ./my-graph-app --root-cert ./rootCA.pem
+neo4j-app-signer --verify --app ./my-graph-app --root-cert ./rootCA.pem
 ```
 
 ## Development

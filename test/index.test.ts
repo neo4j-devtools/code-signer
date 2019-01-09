@@ -26,7 +26,7 @@ const certPath = path.join(tmpDir, 'cert');
 const selfSignedCertPath = path.join(tmpDir, 'ssCert');
 const selfSignedKeyPath = path.join(tmpDir, 'ssKey');
 
-describe('app-signer', () => {
+describe('neo4j-app-signer', () => {
 
     beforeAll(async () => {
         fs.writeFileSync(privateKeyPath, pki.privateKeyToPem(keys.privateKey));
