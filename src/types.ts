@@ -47,6 +47,12 @@ export interface CertificateInfo {
     subject: Entity;
     serialNumber: string;
     expires: Date;
+    fingerprints: Fingerprints;
+}
+
+export interface Fingerprints {
+    sha1: string;
+    md5: string;
 }
 
 export interface Entity {

@@ -68,6 +68,8 @@ declare module 'node-forge-extended' {
                     certs: pki.Certificate[]
                 ) => boolean | CertificateError
             ): boolean;
+
+            function certificateToAsn1(cert: pki.Certificate): asn1.Asn1;
         }
     }
 }
