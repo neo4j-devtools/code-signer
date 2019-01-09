@@ -28,6 +28,7 @@ export interface VerifyResult {
 export interface SignOptions {
     data: string;
     privateKeyPem: string; //TODO: use password protected keystore instead (see PKCS#12)
+    passphrase?: string;
     certPem: string;
 }
 

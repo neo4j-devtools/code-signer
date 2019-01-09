@@ -18,15 +18,20 @@ const rootCert = createRootCert(caKeys);
 const selfSignedCert = createRootCert(ssKeys);
 const cert = createLeafCert(keys, caKeys.privateKey, rootCert);
 
-const privateKeyPath = tempy.file();
-const certPath = tempy.file();
-const selfSignedCertPath = tempy.file();
-const selfSignedKeyPath = tempy.file();
+const tmpDir = tempy.directory();
+
+const privateKeyPath = path.join(tmpDir, 'privateKey');
+const encryptedKeyPath = path.join(tmpDir, 'encryptedKey');
+const certPath = path.join(tmpDir, 'cert');
+const selfSignedCertPath = path.join(tmpDir, 'ssCert');
+const selfSignedKeyPath = path.join(tmpDir, 'ssKey');
 
 describe('app-signer', () => {
 
     beforeAll(async () => {
         fs.writeFileSync(privateKeyPath, pki.privateKeyToPem(keys.privateKey));
+        //@ts-ignore
+        fs.writeFileSync(encryptedKeyPath, pki.encryptRsaPrivateKey(keys.privateKey, 'password'));
         fs.writeFileSync(certPath, cert);
 
         fs.writeFileSync(selfSignedKeyPath, pki.privateKeyToPem(ssKeys.privateKey));
@@ -42,6 +47,11 @@ describe('app-signer', () => {
 
     it('should sign an app', async () => {
         await signApp(appDir, certPath, privateKeyPath);
+        expect(fs.existsSync(signature)).toBeTruthy();
+    });
+
+    it('should sign an app with an encrypted key', async () => {
+        await signApp(appDir, certPath, encryptedKeyPath, 'password');
         expect(fs.existsSync(signature)).toBeTruthy();
     });
 
@@ -77,9 +87,8 @@ describe('app-signer', () => {
     });
 
     afterAll(async () => {
-        fs.unlinkSync(selfSignedCertPath);
-        fs.unlinkSync(selfSignedKeyPath);
-        fs.unlinkSync(privateKeyPath);
-        fs.unlinkSync(certPath);
+        if (fs.existsSync(tmpDir)) {
+            fse.removeSync(tmpDir);
+        }
     });
 });

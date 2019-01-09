@@ -53,23 +53,9 @@ declare module 'node-forge-extended' {
                 message: string;
             }
 
-            interface CaStore {
-                addCertificate: (certPem: string | pki.Certificate) => void;
-            }
-
-            function createCaStore(certs?: string[] | pki.Certificate[]): CaStore;
-
-            function verifyCertificateChain(
-                caStore: CaStore,
-                chain: pki.Certificate[],
-                verify?: (
-                    verified: boolean | CertificateError,
-                    depth: number,
-                    certs: pki.Certificate[]
-                ) => boolean | CertificateError
-            ): boolean;
-
             function certificateToAsn1(cert: pki.Certificate): asn1.Asn1;
+
+            function encryptRsaPrivateKey(key: pki.rsa.PrivateKey, password: string): string;
         }
     }
 }

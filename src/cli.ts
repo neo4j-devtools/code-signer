@@ -17,7 +17,7 @@ async function run() {
                 process.exit(1);
             }
         } else {
-            await signApp(args.app, args.cert, args['private-key']);
+            await signApp(args.app, args.cert, args['private-key'], args.passphrase);
             console.log('Signed successfully.');
         }
     } catch (e) {

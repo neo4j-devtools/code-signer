@@ -4,9 +4,12 @@ import {SignOptions} from './types';
 
 
 export const sign = (options: SignOptions): string => {
-    const {data, privateKeyPem, certPem} = options;
+    const {data, privateKeyPem, certPem, passphrase} = options;
 
-    const privateKey = pki.privateKeyFromPem(privateKeyPem);
+    const privateKey = passphrase
+        ? pki.decryptRsaPrivateKey(privateKeyPem, passphrase)
+        : pki.privateKeyFromPem(privateKeyPem);
+
     const cert = pki.certificateFromPem(certPem);
 
     const signedData = pkcs7.createSignedData();
