@@ -3,7 +3,7 @@ import * as path from 'path';
 import {SIGNATURE_FILENAME} from './constants';
 import {digestDirectory} from './digest';
 import {sign} from './sign';
-import {InvalidSignatureError, SignOptions, VerifyAppResult} from './types';
+import {InvalidSignatureError, SignatureStatus, SignOptions, VerifyAppResult} from './types';
 import {verify} from './verify';
 
 export * from './types';
@@ -28,8 +28,7 @@ export const verifyApp = async (appPath: string, rootCertificatePem?: string): P
     const signaturePath = path.join(appPath, SIGNATURE_FILENAME);
     if (!fs.existsSync(signaturePath)) {
         return {
-            isSigned: false,
-            isTrusted: false
+            status: 'UNSIGNED'
         };
     }
 
@@ -44,8 +43,11 @@ export const verifyApp = async (appPath: string, rootCertificatePem?: string): P
     if (!result.isValid) {
         return Promise.reject(new InvalidSignatureError(result.error));
     }
+    const status: SignatureStatus = result.isTrusted ? 'TRUSTED' : 'UNTRUSTED';
+
     return {
-        ...result,
-        isSigned: true
+        status,
+        signature: signaturePem,
+        certificate: result.certificate
     };
 };

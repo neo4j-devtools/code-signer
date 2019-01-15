@@ -13,7 +13,7 @@ async function run() {
             const rootCert = args['root-cert'] ? fs.readFileSync(args['root-cert'], 'utf8') : undefined;
             const result = await verifyApp(args.app, rootCert);
             console.dir(result);
-            if (!result.isSigned) {
+            if (result.status === 'UNSIGNED') {
                 process.exit(1);
             }
         } else {

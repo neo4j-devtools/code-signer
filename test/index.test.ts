@@ -59,8 +59,7 @@ describe('neo4j-app-signer', () => {
         await signApp(appDir, certPath, privateKeyPath);
         const result = await verifyApp(appDir, rootCert);
 
-        expect(result.isSigned).toBeTruthy();
-        expect(result.isTrusted).toBeTruthy();
+        expect(result.status).toEqual('TRUSTED');
     });
 
     it('should throw if a signed app has been modified', async () => {
@@ -76,8 +75,7 @@ describe('neo4j-app-signer', () => {
 
         const result = await verifyApp(appDir, rootCert);
 
-        expect(result.isSigned).toBeTruthy();
-        expect(result.isTrusted).toBeFalsy();
+        expect(result.status).toEqual('UNTRUSTED');
     });
 
     afterEach(() => {

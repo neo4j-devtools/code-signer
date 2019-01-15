@@ -1,9 +1,11 @@
 import {pki} from 'node-forge';
 
+export type SignatureStatus = 'TRUSTED' | 'UNSIGNED' | 'UNTRUSTED';
+
 export interface VerifyAppResult {
-    isSigned: boolean;
-    isTrusted: boolean;
+    status: SignatureStatus;
     certificate?: CertificateInfo;
+    signature?: string;
 }
 
 export class InvalidSignatureError extends Error {
