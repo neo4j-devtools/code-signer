@@ -1,7 +1,7 @@
 {
-  "name": "@neo4j/app-signer",
-  "version": "1.0.0",
-  "description": "A CLI tool for signing Graph Apps for Neo4j Desktop platform",
+  "name": "@neo4j/code-signer",
+  "version": "0.0.1",
+  "description": "A CLI tool for signing code",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "bin": {
