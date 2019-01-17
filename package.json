@@ -1,5 +1,5 @@
 {
-  "name": "neo4j-app-signer",
+  "name": "@neo4j/app-signer",
   "version": "1.0.0",
   "description": "A CLI tool for signing Graph Apps for Neo4j Desktop platform",
   "main": "lib/index.js",
@@ -8,11 +8,13 @@
     "neo4j-app-signer": "lib/cli.js"
   },
   "author": "Neo4j Inc.",
-  "private": true,
   "scripts": {
     "build": "tsc && chmod +x lib/cli.js",
     "test": "jest",
-    "prepack": "yarn build && yarn test"
+    "prepack": "yarn build && yarn test",
+    "preparePublish": "echo '//registry.npmjs.org/:_authToken=${NPM_TOKEN}' > .npmrc",
+    "prepublishOnly": "yarn build && yarn test && yarn preparePublish",
+    "publish": "rm -rf .npmrc"
   },
   "dependencies": {
     "@types/minimist": "1.2.0",
