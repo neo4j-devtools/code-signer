@@ -1,6 +1,6 @@
-# App Signer
+# Code Signer
 
-A CLI tool for signing Graph Apps for Neo4j Desktop platform.
+A CLI tool for signing code used by Neo4j Graph platform.
 
 ## Usage
 
