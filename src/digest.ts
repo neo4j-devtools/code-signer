@@ -1,6 +1,6 @@
 import {hashElement} from 'folder-hash';
 
-const hashAlg = 'blake2b512';
+const hashAlg = 'sha512';
 
 export const digestDirectory = async (path: string, excludeFiles: string[]): Promise<string> => {
     const result = await hashElement(path, {
