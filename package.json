@@ -13,8 +13,7 @@
     "build": "tsc && chmod +x lib/cli.js",
     "test": "jest",
     "prepack": "yarn build && yarn test",
-    "preparePublish": "echo '//registry.npmjs.org/:_authToken=${NPM_TOKEN}' > .npmrc",
-    "prepublishOnly": "yarn build && yarn test && yarn preparePublish",
+    "prepublishOnly": "echo '//registry.npmjs.org/:_authToken=${NPM_TOKEN}' > .npmrc",
     "publish": "rm -rf .npmrc"
   },
   "dependencies": {
