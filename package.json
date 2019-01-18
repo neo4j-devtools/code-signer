@@ -12,7 +12,7 @@
   "scripts": {
     "build": "tsc && chmod +x lib/cli.js",
     "test": "jest",
-    "prepack": "yarn build && yarn test",
+    "prepack": "yarn build && yarn test"
   },
   "dependencies": {
     "@types/minimist": "1.2.0",
