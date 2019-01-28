@@ -1,4 +1,4 @@
-import {hashElement} from 'folder-hash';
+import {hashElement} from './folder-hash';
 
 const hashAlg = 'sha512';
 
