@@ -17,9 +17,12 @@
   "dependencies": {
     "@types/minimist": "1.2.0",
     "@types/node-forge": "0.7.10",
-    "folder-hash": "https://github.com/Metaur/node-folder-hash",
+    "debug": "3.1.0",
+    "graceful-fs": "4.1.11",
+    "minimatch": "3.0.4",
     "minimist": "1.2.0",
-    "node-forge": "0.7.6"
+    "node-forge": "0.7.6",
+    "p-limit": "2.1.0"
   },
   "devDependencies": {
     "@types/fs-extra": "5.0.4",
