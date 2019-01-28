@@ -1,4 +1,7 @@
-﻿const crypto = require('crypto'),
+﻿// Forked from https://github.com/marc136/node-folder-hash
+// Modified since then
+
+const crypto = require('crypto'),
     debug = require('debug'),
     minimatch = require('minimatch'),
     path = require('path'),
