@@ -4,6 +4,7 @@ declare module 'folder-hash' {
         encoding?: string; // 'base64'
         files?: HashElementRules;
         folders?: HashElementRules;
+        concurrencyLimit?: number;
     }
 
     export interface HashElementRules {
