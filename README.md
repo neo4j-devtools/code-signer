@@ -8,14 +8,19 @@ Sign `my-graph-app` directory:
 
 ```bash
 
-code-signer --app ./my-graph-app --private-key ./private-key.pem --passphrase password --cert ./certificate.pem
+npx @neo4j/code-signer --app ./my-graph-app-folder \
+  --private-key ./private-key.pem \
+  --passphrase password \
+  --cert ./certificate.pem
 ```
 
 Verify `my-graph-app`:
 
 ```bash
 
-code-signer --verify --app ./my-graph-app --root-cert ./rootCA.pem
+npx @neo4j/code-signer --verify \
+  --app ./my-graph-app-folder \
+  --root-cert ./rootCA.pem
 ```
 
 ## Development
