@@ -10,8 +10,9 @@ Sign `my-graph-app` directory:
 
 npx @neo4j/code-signer --app ./my-graph-app-folder \
   --private-key ./private-key.pem \
-  --passphrase password \
-  --cert ./certificate.pem
+  --cert ./certificate.pem \
+  --passphrase your-private-key-passphrase
+
 ```
 
 Verify `my-graph-app`:
