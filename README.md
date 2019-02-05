@@ -48,7 +48,7 @@ npx @neo4j/code-signer --app ./package \
 cd package
 npm pack
 
-# publish, atill inside package/ folder
+# publish, still inside package/ folder
 npm publish *.tgz
 
 
