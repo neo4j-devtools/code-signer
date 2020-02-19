@@ -6,6 +6,8 @@ export interface VerifyAppResult {
     status: SignatureStatus;
     certificate?: CertificateInfo;
     signature?: string;
+    isRevoked?: boolean;
+    didRevocationCheck?: boolean;
 }
 
 export class InvalidSignatureError extends Error {
@@ -23,6 +25,8 @@ export interface VerifyOptions {
 export interface VerifyResult {
     isValid: boolean;
     isTrusted: boolean;
+    isRevoked: boolean;
+    didRevocationCheck: boolean;
     error?: any;
     certificate?: CertificateInfo;
 }

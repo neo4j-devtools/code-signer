@@ -1,15 +1,19 @@
 import {asn1, md, pkcs7, pki, util} from 'node-forge';
+import * as crypto from 'crypto';
+import fetch from 'node-fetch';
+
 import {mapCertificateInfo} from './certificate';
-import {DIGEST_ALGORITHM_OID} from './constants';
+import {CERTIFICATION_SERVER_PUBLIC_KEY, CERTIFICATION_SERVER_URL, DIGEST_ALGORITHM_OID} from './constants';
 import {VerifyCertResult, VerifyOptions, VerifyResult, VerifySignatureResult} from './types';
 
-export const verify = (options: VerifyOptions): VerifyResult => {
+export const verify = async (options: VerifyOptions): Promise<VerifyResult> => {
     const {data, signaturePem, rootCertificatePem} = options;
 
     let isValid = false;
     let isTrusted = false;
     let error;
     let certificate: pki.Certificate | undefined;
+    const {didRevocationCheck, isRevoked} = await verifyCertificateNotRevoked(signaturePem);
 
     try {
         ({certificate} = verifySignature(signaturePem, data));
@@ -17,14 +21,16 @@ export const verify = (options: VerifyOptions): VerifyResult => {
     } catch (e) {
         error = e;
     }
+
     return {
         certificate: certificate ? mapCertificateInfo(certificate) : undefined,
         error,
         isTrusted,
-        isValid
+        isValid,
+        didRevocationCheck,
+        isRevoked
     };
 };
-
 
 export const verifyCertificate = (certificate: pki.Certificate | string, caPem?: string): VerifyCertResult => {
     const cert = typeof certificate === 'string' ? pki.certificateFromPem(certificate) : certificate;
@@ -53,6 +59,32 @@ export const verifyCertificate = (certificate: pki.Certificate | string, caPem?:
         isValid
     };
 };
+
+export function verifyCertificateNotRevoked(signaturePem: string): Promise<{didRevocationCheck: boolean, isRevoked: boolean}> {
+    const prepped = crypto.createPublicKey({key: CERTIFICATION_SERVER_PUBLIC_KEY});
+    const rand = `${Math.random() * 1000}`;
+    const verify = crypto.createVerify('RSA-SHA512');
+
+    verify.update(rand);
+
+    return fetch(CERTIFICATION_SERVER_URL, {
+        method: 'POST',
+        headers: {
+            'X-Request-ID': rand,
+            'Content-Type': 'text'
+        },
+        body: signaturePem
+    })
+        .then((res) => res.text())
+        .then((res) => ({
+            didRevocationCheck: true,
+            isRevoked: !verify.verify(prepped, res, 'base64')
+        }))
+        .catch(() => ({
+            didRevocationCheck: false,
+            isRevoked: false
+        }));
+}
 
 function verifyUntrustedCert(cert: pki.Certificate) {
     let error;
