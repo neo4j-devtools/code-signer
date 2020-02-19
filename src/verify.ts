@@ -71,7 +71,7 @@ export function verifyCertificateNotRevoked(signaturePem: string): Promise<{revo
         method: 'POST',
         headers: {
             'X-Request-ID': rand,
-            'Content-Type': 'text'
+            'Content-Type': 'text/html'
         },
         body: signaturePem
     })
