@@ -47,7 +47,7 @@ export const verifyApp = async (appPath: string, rootCertificatePem?: string): P
 
     return {
         status,
-        didRevocationCheck: result.didRevocationCheck,
+        revocationError: result.revocationError,
         isRevoked: result.isRevoked,
         signature: signaturePem,
         certificate: result.certificate

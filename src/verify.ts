@@ -13,7 +13,7 @@ export const verify = async (options: VerifyOptions): Promise<VerifyResult> => {
     let isTrusted = false;
     let error;
     let certificate: pki.Certificate | undefined;
-    const {didRevocationCheck, isRevoked} = await verifyCertificateNotRevoked(signaturePem);
+    const {revocationError, isRevoked} = await verifyCertificateNotRevoked(signaturePem);
 
     try {
         ({certificate} = verifySignature(signaturePem, data));
@@ -27,7 +27,7 @@ export const verify = async (options: VerifyOptions): Promise<VerifyResult> => {
         error,
         isTrusted,
         isValid,
-        didRevocationCheck,
+        revocationError,
         isRevoked
     };
 };
@@ -60,7 +60,7 @@ export const verifyCertificate = (certificate: pki.Certificate | string, caPem?:
     };
 };
 
-export function verifyCertificateNotRevoked(signaturePem: string): Promise<{didRevocationCheck: boolean, isRevoked: boolean}> {
+export function verifyCertificateNotRevoked(signaturePem: string): Promise<{revocationError?: string, isRevoked: boolean}> {
     const prepped = crypto.createPublicKey({key: CERTIFICATION_SERVER_PUBLIC_KEY});
     const rand = `${Math.random() * 1000}`;
     const verify = crypto.createVerify('RSA-SHA512');
@@ -77,11 +77,10 @@ export function verifyCertificateNotRevoked(signaturePem: string): Promise<{didR
     })
         .then((res) => res.text())
         .then((res) => ({
-            didRevocationCheck: true,
             isRevoked: !verify.verify(prepped, res, 'base64')
         }))
-        .catch(() => ({
-            didRevocationCheck: false,
+        .catch(({message: revocationError}) => ({
+            revocationError,
             isRevoked: false
         }));
 }
