@@ -4,7 +4,7 @@ import fetch from "node-fetch";
 
 import { mapCertificateInfo } from "./certificate";
 import { CERTIFICATION_SERVER_PUBLIC_KEY, CERTIFICATION_SERVER_URL, DIGEST_ALGORITHM_OID } from "./constants";
-import { VerifyCertResult, VerifyOptions, VerifyResult, VerifySignatureResult } from "./types";
+import { VerifyCertResult, VerifyOptions, VerifyResult, VerifySignatureResult, InvalidSignatureError } from "./types";
 
 export const verify = async (options: VerifyOptions): Promise<VerifyResult> => {
     const { data, signaturePem, rootCertificatePem } = options;
@@ -52,7 +52,7 @@ export const verifyCertificate = (certificate: pki.Certificate | string, caPem?:
         if (isCertError(e) && e.error === "forge.pki.UnknownCertificateAuthority") {
             ({ isValid, error } = verifyUntrustedCert(cert));
         } else {
-            error = isCertError(e) ? e.message : e;
+            error = isCertError(e) ? new InvalidSignatureError(e.message) : e;
         }
     }
     return {

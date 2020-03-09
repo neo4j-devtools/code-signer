@@ -66,7 +66,7 @@ describe("neo4j-app-signer", () => {
         fs.writeFileSync(appSrc, "Hacked");
 
         const promise = verifyApp({ appPath: appDir, rootCertificatePem: rootCert, checkRevocationStatus: false });
-        return expect(promise).rejects.toEqual(new InvalidSignatureError("Error: Invalid content digest."));
+        return expect(promise).rejects.toEqual(new InvalidSignatureError("Invalid content digest."));
     });
 
     it("should verify a self-signed app as not trusted", async () => {

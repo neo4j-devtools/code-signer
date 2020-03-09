@@ -54,7 +54,7 @@ export const verifyApp = async (payload: VerifyAppPayload): Promise<VerifyAppRes
     });
 
     if (!result.isValid) {
-        return Promise.reject(new InvalidSignatureError(result.error));
+        return Promise.reject(result.error);
     }
     const status: SignatureStatus = result.isTrusted ? "TRUSTED" : "UNTRUSTED";
     const revocationStatus: RevokationStatus =
