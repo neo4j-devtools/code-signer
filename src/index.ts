@@ -1,8 +1,8 @@
-import * as fs from "fs";
-import * as path from "path";
-import { SIGNATURE_FILENAME } from "./constants";
-import { digestDirectory } from "./digest";
-import { sign } from "./sign";
+import * as fs from 'fs';
+import * as path from 'path';
+import {SIGNATURE_FILENAME} from './constants';
+import {digestDirectory} from './digest';
+import {sign} from './sign';
 import {
     InvalidSignatureError,
     SignatureStatus,
@@ -10,10 +10,10 @@ import {
     VerifyAppResult,
     VerifyAppPayload,
     RevokationStatus
-} from "./types";
-import { verify } from "./verify";
+} from './types';
+import {verify} from './verify';
 
-export * from "./types";
+export * from './types';
 
 export const signApp = async (
     appPath: string,
@@ -24,9 +24,9 @@ export const signApp = async (
     const digest = await digestDirectory(appPath, [SIGNATURE_FILENAME]);
 
     const options: SignOptions = {
-        certPem: fs.readFileSync(certPath, "utf8"),
+        certPem: fs.readFileSync(certPath, 'utf8'),
         data: digest,
-        privateKeyPem: fs.readFileSync(keyPath, "utf8"),
+        privateKeyPem: fs.readFileSync(keyPath, 'utf8'),
         passphrase
     };
 
@@ -35,17 +35,17 @@ export const signApp = async (
 };
 
 export const verifyApp = async (payload: VerifyAppPayload): Promise<VerifyAppResult> => {
-    const { appPath, rootCertificatePem, checkRevocationStatus } = payload;
+    const {appPath, rootCertificatePem, checkRevocationStatus} = payload;
     const signaturePath = path.join(appPath, SIGNATURE_FILENAME);
     if (!fs.existsSync(signaturePath)) {
         return {
-            status: "UNSIGNED",
-            revocationStatus: "OK"
+            status: 'UNSIGNED',
+            revocationStatus: 'OK'
         };
     }
 
     const digest = await digestDirectory(appPath, [SIGNATURE_FILENAME]);
-    const signaturePem = fs.readFileSync(signaturePath, "utf8");
+    const signaturePem = fs.readFileSync(signaturePath, 'utf8');
     const result = await verify({
         data: digest,
         rootCertificatePem,
@@ -56,9 +56,9 @@ export const verifyApp = async (payload: VerifyAppPayload): Promise<VerifyAppRes
     if (!result.isValid) {
         return Promise.reject(result.error);
     }
-    const status: SignatureStatus = result.isTrusted ? "TRUSTED" : "UNTRUSTED";
+    const status: SignatureStatus = result.isTrusted ? 'TRUSTED' : 'UNTRUSTED';
     const revocationStatus: RevokationStatus =
-        typeof result["isRevoked"] === "undefined" ? "UNKNOWN" : result.isRevoked ? "REVOKED" : "OK";
+        typeof result['isRevoked'] === 'undefined' ? 'UNKNOWN' : result.isRevoked ? 'REVOKED' : 'OK';
 
     return {
         status,

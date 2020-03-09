@@ -1,7 +1,7 @@
-import { pki } from "node-forge";
+import {pki} from 'node-forge';
 
-export type SignatureStatus = "TRUSTED" | "UNSIGNED" | "UNTRUSTED";
-export type RevokationStatus = "OK" | "REVOKED" | "UNKNOWN";
+export type SignatureStatus = 'TRUSTED' | 'UNSIGNED' | 'UNTRUSTED';
+export type RevokationStatus = 'OK' | 'REVOKED' | 'UNKNOWN';
 
 export interface VerifyAppPayload {
     appPath: string;
