@@ -1,20 +1,32 @@
-import * as fs from 'fs';
-import * as path from 'path';
-import {SIGNATURE_FILENAME} from './constants';
-import {digestDirectory} from './digest';
-import {sign} from './sign';
-import {InvalidSignatureError, SignatureStatus, SignOptions, VerifyAppResult} from './types';
-import {verify} from './verify';
+import * as fs from "fs";
+import * as path from "path";
+import { SIGNATURE_FILENAME } from "./constants";
+import { digestDirectory } from "./digest";
+import { sign } from "./sign";
+import {
+    InvalidSignatureError,
+    SignatureStatus,
+    SignOptions,
+    VerifyAppResult,
+    VerifyAppPayload,
+    RevokationStatus
+} from "./types";
+import { verify } from "./verify";
 
-export * from './types';
+export * from "./types";
 
-export const signApp = async (appPath: string, certPath: string, keyPath: string, passphrase?: string): Promise<void> => {
+export const signApp = async (
+    appPath: string,
+    certPath: string,
+    keyPath: string,
+    passphrase?: string
+): Promise<void> => {
     const digest = await digestDirectory(appPath, [SIGNATURE_FILENAME]);
 
     const options: SignOptions = {
-        certPem: fs.readFileSync(certPath, 'utf8'),
+        certPem: fs.readFileSync(certPath, "utf8"),
         data: digest,
-        privateKeyPem: fs.readFileSync(keyPath, 'utf8'),
+        privateKeyPem: fs.readFileSync(keyPath, "utf8"),
         passphrase
     };
 
@@ -22,33 +34,36 @@ export const signApp = async (appPath: string, certPath: string, keyPath: string
     fs.writeFileSync(path.join(appPath, SIGNATURE_FILENAME), signature);
 };
 
-
-export const verifyApp = async (appPath: string, rootCertificatePem?: string): Promise<VerifyAppResult> => {
-
+export const verifyApp = async (payload: VerifyAppPayload): Promise<VerifyAppResult> => {
+    const { appPath, rootCertificatePem, checkRevocationStatus } = payload;
     const signaturePath = path.join(appPath, SIGNATURE_FILENAME);
     if (!fs.existsSync(signaturePath)) {
         return {
-            status: 'UNSIGNED'
+            status: "UNSIGNED",
+            revocationStatus: "OK"
         };
     }
 
     const digest = await digestDirectory(appPath, [SIGNATURE_FILENAME]);
-    const signaturePem = fs.readFileSync(signaturePath, 'utf8');
+    const signaturePem = fs.readFileSync(signaturePath, "utf8");
     const result = await verify({
         data: digest,
         rootCertificatePem,
-        signaturePem
+        signaturePem,
+        checkRevocationStatus
     });
 
     if (!result.isValid) {
         return Promise.reject(new InvalidSignatureError(result.error));
     }
-    const status: SignatureStatus = result.isTrusted ? 'TRUSTED' : 'UNTRUSTED';
+    const status: SignatureStatus = result.isTrusted ? "TRUSTED" : "UNTRUSTED";
+    const revocationStatus: RevokationStatus =
+        typeof result["isRevoked"] === "undefined" ? "UNKNOWN" : result.isRevoked ? "REVOKED" : "OK";
 
     return {
         status,
         revocationError: result.revocationError,
-        isRevoked: result.isRevoked,
+        revocationStatus,
         signature: signaturePem,
         certificate: result.certificate
     };
