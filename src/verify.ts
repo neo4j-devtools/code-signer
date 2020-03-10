@@ -81,10 +81,18 @@ export function verifyCertificateNotRevoked(
         },
         body: signaturePem
     })
-        .then(res => res.text())
-        .then(res => ({
-            isRevoked: !verify.verify(prepped, res, 'base64')
-        }))
+        .then(res => {
+            // Unknown status code. Throw.
+            if (![400, 200].includes(res.status)) {
+                throw new Error(`Unhandled status code: ${res.status}: ${res.statusText}`);
+            }
+            return res.text();
+        })
+        .then(res => {
+            return {
+                isRevoked: !verify.verify(prepped, res, 'base64')
+            };
+        })
         .catch(({message: revocationError}) => ({
             revocationError,
             isRevoked: false
