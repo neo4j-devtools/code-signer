@@ -1,6 +1,6 @@
 {
   "name": "@neo4j/code-signer",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "A CLI tool for signing code",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
