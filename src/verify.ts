@@ -1,15 +1,21 @@
 import {asn1, md, pkcs7, pki, util} from 'node-forge';
-import {mapCertificateInfo} from './certificate';
-import {DIGEST_ALGORITHM_OID} from './constants';
-import {VerifyCertResult, VerifyOptions, VerifyResult, VerifySignatureResult} from './types';
+import * as crypto from 'crypto';
+import fetch from 'node-fetch';
 
-export const verify = (options: VerifyOptions): VerifyResult => {
+import {mapCertificateInfo} from './certificate';
+import {CERTIFICATION_SERVER_PUBLIC_KEY, CERTIFICATION_SERVER_URL, DIGEST_ALGORITHM_OID} from './constants';
+import {VerifyCertResult, VerifyOptions, VerifyResult, VerifySignatureResult, InvalidSignatureError} from './types';
+
+export const verify = async (options: VerifyOptions): Promise<VerifyResult> => {
     const {data, signaturePem, rootCertificatePem} = options;
 
     let isValid = false;
     let isTrusted = false;
     let error;
     let certificate: pki.Certificate | undefined;
+    const {revocationError, isRevoked} = options.checkRevocationStatus
+        ? await verifyCertificateNotRevoked(signaturePem)
+        : {revocationError: undefined, isRevoked: undefined};
 
     try {
         ({certificate} = verifySignature(signaturePem, data));
@@ -17,14 +23,16 @@ export const verify = (options: VerifyOptions): VerifyResult => {
     } catch (e) {
         error = e;
     }
+
     return {
         certificate: certificate ? mapCertificateInfo(certificate) : undefined,
         error,
         isTrusted,
-        isValid
+        isValid,
+        revocationError,
+        isRevoked
     };
 };
-
 
 export const verifyCertificate = (certificate: pki.Certificate | string, caPem?: string): VerifyCertResult => {
     const cert = typeof certificate === 'string' ? pki.certificateFromPem(certificate) : certificate;
@@ -44,7 +52,7 @@ export const verifyCertificate = (certificate: pki.Certificate | string, caPem?:
         if (isCertError(e) && e.error === 'forge.pki.UnknownCertificateAuthority') {
             ({isValid, error} = verifyUntrustedCert(cert));
         } else {
-            error = isCertError(e) ? e.message : e;
+            error = isCertError(e) ? new InvalidSignatureError(e.message) : e;
         }
     }
     return {
@@ -53,6 +61,35 @@ export const verifyCertificate = (certificate: pki.Certificate | string, caPem?:
         isValid
     };
 };
+
+export function verifyCertificateNotRevoked(
+    signaturePem: string
+): Promise<{revocationError?: string; isRevoked: boolean}> {
+    const prepped = crypto.createPublicKey({
+        key: CERTIFICATION_SERVER_PUBLIC_KEY
+    });
+    const rand = `${Math.random() * 1000}`;
+    const verify = crypto.createVerify('RSA-SHA512');
+
+    verify.update(rand);
+
+    return fetch(CERTIFICATION_SERVER_URL, {
+        method: 'POST',
+        headers: {
+            'X-Request-ID': rand,
+            'Content-Type': 'text/html'
+        },
+        body: signaturePem
+    })
+        .then(res => res.text())
+        .then(res => ({
+            isRevoked: !verify.verify(prepped, res, 'base64')
+        }))
+        .catch(({message: revocationError}) => ({
+            revocationError,
+            isRevoked: false
+        }));
+}
 
 function verifyUntrustedCert(cert: pki.Certificate) {
     let error;

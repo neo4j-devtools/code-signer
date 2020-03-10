@@ -6,3 +6,4 @@ package/
 .npmrc
 *.log
 .idea/
+.vscode/

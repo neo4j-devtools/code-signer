@@ -1,11 +1,20 @@
 import {pki} from 'node-forge';
 
 export type SignatureStatus = 'TRUSTED' | 'UNSIGNED' | 'UNTRUSTED';
+export type RevokationStatus = 'OK' | 'REVOKED' | 'UNKNOWN';
+
+export interface VerifyAppPayload {
+    appPath: string;
+    rootCertificatePem?: string;
+    checkRevocationStatus: boolean;
+}
 
 export interface VerifyAppResult {
     status: SignatureStatus;
+    revocationStatus: RevokationStatus;
     certificate?: CertificateInfo;
     signature?: string;
+    revocationError?: string;
 }
 
 export class InvalidSignatureError extends Error {
@@ -18,11 +27,14 @@ export interface VerifyOptions {
     data: string;
     signaturePem: string;
     rootCertificatePem?: string;
+    checkRevocationStatus: boolean;
 }
 
 export interface VerifyResult {
     isValid: boolean;
     isTrusted: boolean;
+    isRevoked?: boolean;
+    revocationError?: string;
     error?: any;
     certificate?: CertificateInfo;
 }

@@ -27,7 +27,6 @@ const selfSignedCertPath = path.join(tmpDir, 'ssCert');
 const selfSignedKeyPath = path.join(tmpDir, 'ssKey');
 
 describe('neo4j-app-signer', () => {
-
     beforeAll(async () => {
         fs.writeFileSync(privateKeyPath, pki.privateKeyToPem(keys.privateKey));
         //@ts-ignore
@@ -57,7 +56,7 @@ describe('neo4j-app-signer', () => {
 
     it('should verify a valid signature', async () => {
         await signApp(appDir, certPath, privateKeyPath);
-        const result = await verifyApp(appDir, rootCert);
+        const result = await verifyApp({appPath: appDir, rootCertificatePem: rootCert, checkRevocationStatus: false});
 
         expect(result.status).toEqual('TRUSTED');
     });
@@ -66,16 +65,15 @@ describe('neo4j-app-signer', () => {
         await signApp(appDir, certPath, privateKeyPath);
         fs.writeFileSync(appSrc, 'Hacked');
 
-        const promise = verifyApp(appDir, rootCert);
-        return expect(promise).rejects.toEqual(new InvalidSignatureError('Error: Invalid content digest.'));
+        const promise = verifyApp({appPath: appDir, rootCertificatePem: rootCert, checkRevocationStatus: false});
+        return expect(promise).rejects.toEqual(new InvalidSignatureError('Invalid content digest.'));
     });
 
-    xit('should verify a self-signed app as not trusted', async () => {
+    it('should verify a self-signed app as not trusted', async () => {
         await signApp(appDir, selfSignedCertPath, selfSignedKeyPath);
 
-        const result = await verifyApp(appDir, rootCert);
-
-        expect(result.status).toEqual('UNTRUSTED');
+        const promise = verifyApp({appPath: appDir, rootCertificatePem: rootCert, checkRevocationStatus: false});
+        return expect(promise).rejects.toEqual(new InvalidSignatureError('Certificate signature is invalid.'));
     });
 
     afterEach(() => {

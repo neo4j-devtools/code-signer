@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-import * as fs from "fs";
+import * as fs from 'fs';
 import * as parseArgs from 'minimist';
 import {signApp, verifyApp} from '.';
 
@@ -8,10 +8,15 @@ run();
 
 async function run() {
     const args = parseArgs(process.argv);
+    const skipRevocationCheck = !!args['skip-revocation-check'];
     try {
         if (args.verify) {
             const rootCert = args['root-cert'] ? fs.readFileSync(args['root-cert'], 'utf8') : undefined;
-            const result = await verifyApp(args.app, rootCert);
+            const result = await verifyApp({
+                appPath: args.app,
+                rootCertificatePem: rootCert,
+                checkRevocationStatus: !skipRevocationCheck
+            });
             console.dir(result);
             if (result.status === 'UNSIGNED') {
                 process.exit(1);
@@ -25,6 +30,3 @@ async function run() {
         process.exit(1);
     }
 }
-
-
-
