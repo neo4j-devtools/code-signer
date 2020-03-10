@@ -1,7 +1,9 @@
 # Code Signer
 
 A CLI tool for signing code used by Neo4j Graph platform.  
-Creates a `signature.pem` file in the signed folder.
+Creates a `signature.pem` file in the signed folder.  
+If verifies signatures locally and against Neo4j:s CRL server
+for revoked certificates when online.
 
 ## Usage
 
@@ -25,7 +27,10 @@ npx @neo4j/code-signer --verify \
   --root-cert ./rootCA.pem
 ```
 
+You can also pass the `--skip-revocation-check` flag to skip the certificate revocation check against Neo4j:s CRL server.
+
 ## Common usage pattern
+
 These steps are usually what's needed to sign a node application.
 
 ```
@@ -43,7 +48,7 @@ npx @neo4j/code-signer --app ./package \
   --private-key ../private-key.pem \
   --cert ../certificate.pem \
   --passphrase your-private-key-passphrase
-  
+
 # pack app again, from inside package/ folder. Important!
 cd package
 npm pack
@@ -56,6 +61,6 @@ npm publish *.tgz
 
 ## Development
 
-- Build: `yarn build`
-- Test: `yarn test`
-- Package: `yarn pack`
+-   Build: `yarn build`
+-   Test: `yarn test`
+-   Package: `yarn pack`
