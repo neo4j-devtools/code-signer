@@ -20,7 +20,7 @@
     "debug": "3.1.0",
     "graceful-fs": "4.1.11",
     "minimatch": "3.0.4",
-    "minimist": "1.2.0",
+    "minimist": "1.2.2",
     "node-fetch": "^2.6.0",
     "node-forge": "0.7.6",
     "p-limit": "2.1.0"
