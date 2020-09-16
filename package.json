@@ -22,7 +22,7 @@
     "minimatch": "3.0.4",
     "minimist": "1.2.0",
     "node-fetch": "^2.6.0",
-    "node-forge": "0.7.6",
+    "node-forge": "0.10.0",
     "p-limit": "2.1.0"
   },
   "devDependencies": {
