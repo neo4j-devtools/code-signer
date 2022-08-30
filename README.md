@@ -1,7 +1,7 @@
 # Code Signer
 
-A CLI tool for signing code used by Neo4j Graph platform.  
-Creates a `signature.pem` file in the signed folder.  
+A CLI tool for signing code used by Neo4j Graph platform.
+Creates a `signature.pem` file in the signed folder.
 If verifies signatures locally and against Neo4j:s CRL server
 for revoked certificates when online.
 
@@ -61,6 +61,6 @@ npm publish *.tgz
 
 ## Development
 
--   Build: `yarn build`
--   Test: `yarn test`
--   Package: `yarn pack`
+- Build: `npm build`
+- Test: `npm test`
+- Package: `npm pack`

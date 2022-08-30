@@ -187,7 +187,9 @@ function parseSignerInfo(data: pkcs7.ParsedPkcsSignedData): SignerInfo {
     let signingTime: Date | undefined;
 
     for (let i = 0, l = signedAttrs.length; i < l; ++i) {
+        // @ts-ignore
         const attributeType = toOid(signedAttrs[i].value[0].value);
+        // @ts-ignore
         const value = (signedAttrs[i].value[1].value[0].value as unknown) as string;
         if (attributeType === pki.oids.messageDigest) {
             messageDigest = value;
@@ -207,6 +209,7 @@ function parseSignerInfo(data: pkcs7.ParsedPkcsSignedData): SignerInfo {
     }
 
     const digestAlgorithm = asn1.derToOid(capture.digestAlgorithm);
+    // @ts-ignore
     const signatureAlgorithm = toOid(capture.signatureAlgorithm[0].value);
     const signature = capture.signature;
 
